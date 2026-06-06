@@ -1,25 +1,28 @@
 package com.example.dailycheckin.ui
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.dailycheckin.ui.theme.BrandGreen
+import com.example.dailycheckin.ui.theme.CheckedGreen
+import com.example.dailycheckin.ui.theme.PrimaryText
+import com.example.dailycheckin.ui.theme.SecondaryText
+import com.example.dailycheckin.ui.theme.WeekendText
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -30,53 +33,37 @@ fun MonthCalendar(
     month: YearMonth,
     checkedDates: Set<LocalDate>,
     today: LocalDate,
-    onPreviousMonth: () -> Unit,
-    onNextMonth: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TextButton(onClick = onPreviousMonth) {
-                Text("上个月")
-            }
-            Text(
-                text = "${month.year} 年 ${month.monthValue} 月",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            TextButton(onClick = onNextMonth) {
-                Text("下个月")
-            }
-        }
-
         Row(modifier = Modifier.fillMaxWidth()) {
-            weekLabels.forEach { label ->
+            weekLabels.forEachIndexed { index, label ->
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .height(36.dp),
+                        .height(34.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = label,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (index >= 5) WeekendText else SecondaryText,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 11.sp,
                     )
                 }
             }
         }
 
         calendarDates(month).chunked(7).forEach { week ->
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(3.dp),
+            ) {
                 week.forEach { date ->
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .height(48.dp),
+                            .height(44.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         if (date != null) {
@@ -101,43 +88,35 @@ private fun CalendarDay(
     isToday: Boolean,
     isFuture: Boolean,
 ) {
-    val backgroundColor = when {
-        isChecked -> MaterialTheme.colorScheme.primary
-        isToday -> MaterialTheme.colorScheme.primaryContainer
+    val background = when {
+        isToday -> BrandGreen
+        isChecked -> CheckedGreen
         else -> Color.Transparent
     }
-    val contentColor = when {
-        isChecked -> MaterialTheme.colorScheme.onPrimary
-        isFuture -> MaterialTheme.colorScheme.outline
-        else -> MaterialTheme.colorScheme.onSurface
-    }
-    val todayBorder = if (isToday) {
-        BorderStroke(
-            width = 2.dp,
-            color = if (isChecked) {
-                MaterialTheme.colorScheme.onPrimary
-            } else {
-                MaterialTheme.colorScheme.primary
-            },
-        )
-    } else {
-        null
+    val foreground = when {
+        isToday -> Color.White
+        isChecked -> BrandGreen
+        isFuture -> SecondaryText.copy(alpha = 0.55f)
+        else -> PrimaryText
     }
 
-    Surface(
-        modifier = Modifier.size(38.dp),
-        shape = CircleShape,
-        color = backgroundColor,
-        contentColor = contentColor,
-        border = todayBorder,
+    Box(
+        modifier = Modifier
+            .size(38.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(background),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = date.dayOfMonth.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (isChecked || isToday) FontWeight.Bold else FontWeight.Normal,
-            )
-        }
+        Text(
+            text = date.dayOfMonth.toString(),
+            color = foreground,
+            fontWeight = if (isToday || isChecked) {
+                FontWeight.SemiBold
+            } else {
+                FontWeight.Normal
+            },
+            fontSize = 13.sp,
+        )
     }
 }
 

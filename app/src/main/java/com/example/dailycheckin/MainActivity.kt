@@ -35,8 +35,7 @@ class MainActivity : ComponentActivity() {
 
                 if (showHistory) {
                     HistoryScreen(
-                        records = state.records,
-                        today = state.today,
+                        state = state,
                         onBack = { showHistory = false },
                     )
                 } else {
