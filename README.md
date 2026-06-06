@@ -2,7 +2,14 @@
 
 这是一个个人自用的 Android 本地 App。每天第一次打开时自动打卡，当天重复打开不会新增记录。数据只保存在手机中，不需要登录、网络、服务器或后台常驻。
 
-当前版本：**2.2**
+当前版本：**2.3**
+
+## V2.3 图标更新
+
+- 使用 `design/icon_source.svg` 作为可编辑图标源文件
+- 新增 Android 8+ 自适应图标
+- 生成 mdpi 至 xxxhdpi 五档兼容图标
+- 保留浅蓝背景、蓝色虚线圆环和白色对勾设计
 
 ## V2.2 布局修正
 
@@ -49,7 +56,7 @@ V2 没有修改数据库结构。直接覆盖安装 V1 APK 时，原有打卡记
 2. 进入 `Code` 页面。
 3. 点击 `Add file` > `Upload files`。
 4. 上传本项目中发生变化的文件，保持原有目录结构。
-5. 确认新增的 `MonthCalendar.kt`、`MonthCalendarTest.kt` 和 `ic_launcher.xml` 也已上传。
+5. 确认新增的月历文件、测试文件和全部 `mipmap` / `drawable` 图标资源也已上传。
 6. 提交说明填写 `Upgrade to version 2.0`。
 7. 点击 `Commit changes`。
 
