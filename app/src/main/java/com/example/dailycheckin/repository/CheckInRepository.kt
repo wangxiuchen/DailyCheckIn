@@ -36,6 +36,6 @@ class CheckInRepository(
 
     companion object {
         private const val INSERT_IGNORED = -1L
-        private val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")
+        private val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss")
     }
 }
