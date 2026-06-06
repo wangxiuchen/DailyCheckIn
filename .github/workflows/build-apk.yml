@@ -29,6 +29,14 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
 
+      - name: Upload unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-check-in-test-report
+          path: app/build/reports/tests/testDebugUnitTest/**
+          if-no-files-found: warn
+
       - name: Build debug APK
         run: ./gradlew assembleDebug
 
@@ -38,4 +46,3 @@ jobs:
           name: daily-check-in-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-
