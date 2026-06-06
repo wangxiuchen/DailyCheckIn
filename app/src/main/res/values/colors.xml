@@ -2,4 +2,5 @@
 <resources>
     <color name="app_background">#FAF9F7</color>
     <color name="brand_green">#2D6A4F</color>
+    <color name="icon_background">#EEF6FF</color>
 </resources>
