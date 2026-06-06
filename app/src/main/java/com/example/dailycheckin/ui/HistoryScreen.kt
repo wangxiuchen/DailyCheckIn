@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -75,12 +76,13 @@ fun HistoryScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(AppBackground)
+            .statusBarsPadding()
             .padding(horizontal = 20.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 14.dp),
+                .padding(top = 16.dp, bottom = 18.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextButton(
@@ -182,51 +184,53 @@ private fun CalendarContent(
         (monthCheckedDays * 100.0 / elapsedDays).roundToInt()
     }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        CalendarStat(
-            value = monthCheckedDays.toString(),
-            label = "本月打卡",
-            modifier = Modifier.weight(1f),
-        )
-        CalendarStat(
-            value = "$completionRate%",
-            label = "完成率",
-            modifier = Modifier.weight(1f),
-        )
-        CalendarStat(
-            value = state.currentStreak.toString(),
-            label = "连续天数",
-            modifier = Modifier.weight(1f),
-        )
-    }
-    Spacer(modifier = Modifier.height(16.dp))
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            CalendarStat(
+                value = monthCheckedDays.toString(),
+                label = "本月打卡",
+                modifier = Modifier.weight(1f),
+            )
+            CalendarStat(
+                value = "$completionRate%",
+                label = "完成率",
+                modifier = Modifier.weight(1f),
+            )
+            CalendarStat(
+                value = state.currentStreak.toString(),
+                label = "连续天数",
+                modifier = Modifier.weight(1f),
+            )
+        }
+        Spacer(modifier = Modifier.height(22.dp))
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        MonthArrow(text = "‹", onClick = onPreviousMonth)
-        Text(
-            text = "${visibleMonth.year}年${visibleMonth.monthValue}月",
-            color = PrimaryText,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp,
-        )
-        MonthArrow(text = "›", onClick = onNextMonth)
-    }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            MonthArrow(text = "‹", onClick = onPreviousMonth)
+            Text(
+                text = "${visibleMonth.year}年${visibleMonth.monthValue}月",
+                color = PrimaryText,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+            )
+            MonthArrow(text = "›", onClick = onNextMonth)
+        }
 
-    MonthCalendar(
-        month = visibleMonth,
-        checkedDates = checkedDates,
-        today = state.today,
-        modifier = Modifier.padding(top = 6.dp),
-    )
-    Spacer(modifier = Modifier.height(12.dp))
-    CalendarLegend()
+        MonthCalendar(
+            month = visibleMonth,
+            checkedDates = checkedDates,
+            today = state.today,
+            modifier = Modifier.padding(top = 10.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        CalendarLegend()
+    }
 }
 
 @Composable
