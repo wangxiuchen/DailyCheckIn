@@ -42,6 +42,8 @@ class MainActivity : ComponentActivity() {
                     HomeScreen(
                         state = state,
                         onOpenHistory = { showHistory = true },
+                        onCheckInAnimationFinished =
+                            checkInViewModel::consumeCheckInSuccessAnimation,
                     )
                 }
             }

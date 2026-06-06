@@ -1,5 +1,7 @@
 package com.example.dailycheckin.ui
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,11 +30,14 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,49 +51,143 @@ import com.example.dailycheckin.ui.theme.SecondaryText
 import com.example.dailycheckin.viewmodel.CheckInUiState
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     state: CheckInUiState,
     onOpenHistory: () -> Unit,
+    onCheckInAnimationFinished: () -> Unit,
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppBackground)
-            .statusBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(
-                start = 20.dp,
-                top = 20.dp,
-                end = 20.dp,
-                bottom = 24.dp,
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .background(AppBackground),
     ) {
-        Text(
-            text = state.today.format(DATE_FORMATTER),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Normal,
-            color = SecondaryText,
-        )
-        Text(
-            text = "每日打卡",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = PrimaryText,
-            modifier = Modifier.padding(top = 3.dp),
-        )
-        Spacer(modifier = Modifier.height(22.dp))
-
-        when {
-            state.isLoading -> CircularProgressIndicator(color = BrandGreen)
-            state.errorMessage != null -> Text(
-                text = state.errorMessage,
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    start = 20.dp,
+                    top = 20.dp,
+                    end = 20.dp,
+                    bottom = 24.dp,
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = state.today.format(DATE_FORMATTER),
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.error,
+                color = SecondaryText,
             )
-            else -> HomeContent(state, onOpenHistory)
+            Text(
+                text = "每日打卡",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = PrimaryText,
+                modifier = Modifier.padding(top = 3.dp),
+            )
+            Spacer(modifier = Modifier.height(22.dp))
+
+            when {
+                state.isLoading -> CircularProgressIndicator(color = BrandGreen)
+                state.errorMessage != null -> Text(
+                    text = state.errorMessage,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                else -> HomeContent(state, onOpenHistory)
+            }
+        }
+
+        if (state.didCreateToday) {
+            CheckInSuccessAnimation(
+                onFinished = onCheckInAnimationFinished,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CheckInSuccessAnimation(
+    onFinished: () -> Unit,
+) {
+    val overlayAlpha = remember { Animatable(0f) }
+    val contentScale = remember { Animatable(0.72f) }
+
+    LaunchedEffect(Unit) {
+        coroutineScope {
+            launch {
+                overlayAlpha.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 180),
+                )
+            }
+            launch {
+                contentScale.animateTo(
+                    targetValue = 1.1f,
+                    animationSpec = tween(durationMillis = 260),
+                )
+                contentScale.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 140),
+                )
+            }
+        }
+        delay(800)
+        overlayAlpha.animateTo(
+            targetValue = 0f,
+            animationSpec = tween(durationMillis = 250),
+        )
+        onFinished()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer { alpha = overlayAlpha.value }
+            .background(AppBackground.copy(alpha = 0.96f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier.graphicsLayer {
+                scaleX = contentScale.value
+                scaleY = contentScale.value
+            },
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(104.dp)
+                    .background(BrandGreen, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "✓",
+                    color = Color.White,
+                    fontSize = 52.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            Text(
+                text = "打卡成功",
+                color = PrimaryText,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = 20.dp),
+            )
+            Text(
+                text = "今天也完成啦",
+                color = SecondaryText,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.padding(top = 6.dp),
+            )
         }
     }
 }

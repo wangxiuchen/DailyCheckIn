@@ -45,8 +45,14 @@ class CheckInViewModel(
         }
     }
 
+    fun consumeCheckInSuccessAnimation() {
+        _uiState.value = _uiState.value.copy(didCreateToday = false)
+    }
+
     private fun showRecords(result: CheckInResult) {
         val today = LocalDate.now()
+        val shouldShowSuccessAnimation =
+            _uiState.value.didCreateToday || result.didCreateToday
         val statistics = calculateStatistics(
             recordDates = result.records.map { it.date },
             today = today,
@@ -54,7 +60,7 @@ class CheckInViewModel(
         _uiState.value = CheckInUiState(
             isLoading = false,
             todayRecord = result.records.firstOrNull { it.date == today.toString() },
-            didCreateToday = result.didCreateToday,
+            didCreateToday = shouldShowSuccessAnimation,
             today = today,
             currentStreak = statistics.currentStreak,
             longestStreak = statistics.longestStreak,
