@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.dailycheckin.data.CheckInRecord
+import com.example.dailycheckin.repository.CheckInResult
 import com.example.dailycheckin.repository.CheckInRepository
 import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +15,13 @@ import kotlinx.coroutines.launch
 data class CheckInUiState(
     val isLoading: Boolean = true,
     val todayRecord: CheckInRecord? = null,
+    val didCreateToday: Boolean = false,
+    val today: LocalDate = LocalDate.now(),
     val currentStreak: Int = 0,
+    val longestStreak: Int = 0,
     val totalDays: Int = 0,
+    val currentMonthDays: Int = 0,
+    val currentMonthRate: Int = 0,
     val records: List<CheckInRecord> = emptyList(),
     val errorMessage: String? = null,
 )
@@ -39,17 +45,23 @@ class CheckInViewModel(
         }
     }
 
-    private fun showRecords(records: List<CheckInRecord>) {
+    private fun showRecords(result: CheckInResult) {
         val today = LocalDate.now()
+        val statistics = calculateStatistics(
+            recordDates = result.records.map { it.date },
+            today = today,
+        )
         _uiState.value = CheckInUiState(
             isLoading = false,
-            todayRecord = records.firstOrNull { it.date == today.toString() },
-            currentStreak = calculateCurrentStreak(
-                recordDates = records.map { it.date },
-                today = today,
-            ),
-            totalDays = records.size,
-            records = records,
+            todayRecord = result.records.firstOrNull { it.date == today.toString() },
+            didCreateToday = result.didCreateToday,
+            today = today,
+            currentStreak = statistics.currentStreak,
+            longestStreak = statistics.longestStreak,
+            totalDays = statistics.totalDays,
+            currentMonthDays = statistics.currentMonthDays,
+            currentMonthRate = statistics.currentMonthRate,
+            records = result.records,
         )
     }
 
