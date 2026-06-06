@@ -373,6 +373,6 @@ private fun MonthProgressCard(state: CheckInUiState) {
 }
 
 private val DATE_FORMATTER = DateTimeFormatter.ofPattern(
-    "yyyy年MM月d日 EEEE",
+    "yyyy年MM月dd日 EEEE",
     Locale.CHINA,
 )
