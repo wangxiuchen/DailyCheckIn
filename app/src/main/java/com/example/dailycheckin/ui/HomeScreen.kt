@@ -28,6 +28,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,6 +62,8 @@ fun HomeScreen(
     state: CheckInUiState,
     onOpenHistory: () -> Unit,
     onCheckInAnimationFinished: () -> Unit,
+    notificationsEnabled: Boolean,
+    onToggleNotifications: (Boolean) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -101,7 +105,12 @@ fun HomeScreen(
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.error,
                 )
-                else -> HomeContent(state, onOpenHistory)
+                else -> HomeContent(
+                    state = state,
+                    onOpenHistory = onOpenHistory,
+                    notificationsEnabled = notificationsEnabled,
+                    onToggleNotifications = onToggleNotifications,
+                )
             }
         }
 
@@ -196,6 +205,8 @@ private fun CheckInSuccessAnimation(
 private fun HomeContent(
     state: CheckInUiState,
     onOpenHistory: () -> Unit,
+    notificationsEnabled: Boolean,
+    onToggleNotifications: (Boolean) -> Unit,
 ) {
     CheckInBanner(state)
     Spacer(modifier = Modifier.height(14.dp))
@@ -220,6 +231,12 @@ private fun HomeContent(
     Spacer(modifier = Modifier.height(14.dp))
 
     MonthProgressCard(state)
+    Spacer(modifier = Modifier.height(14.dp))
+
+    ReminderToggleCard(
+        enabled = notificationsEnabled,
+        onToggle = onToggleNotifications,
+    )
     Spacer(modifier = Modifier.height(16.dp))
 
     Button(
@@ -379,6 +396,51 @@ private fun SmallStatCard(
                 color = SecondaryText,
                 fontWeight = FontWeight.Normal,
                 fontSize = 11.sp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReminderToggleCard(
+    enabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(0.5.dp, CardBorder),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "打卡提醒",
+                    color = PrimaryText,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                )
+                Text(
+                    text = "每天 10:00 与 22:00 提醒，已打卡则不再提醒",
+                    color = SecondaryText,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 11.sp,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+            Switch(
+                checked = enabled,
+                onCheckedChange = onToggle,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = BrandGreen,
+                ),
             )
         }
     }

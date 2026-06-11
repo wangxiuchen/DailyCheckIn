@@ -13,8 +13,8 @@ android {
         applicationId = "com.example.dailycheckin"
         minSdk = 26
         targetSdk = 35
-        versionCode = 6
-        versionName = "2.4"
+        versionCode = 7
+        versionName = "2.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,7 +56,10 @@ dependencies {
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
+    implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.activity:activity-compose:1.10.0")
+    // 用于在固定时间触发打卡提醒通知，并能在重启后自动恢复调度。
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")

@@ -1,0 +1,10 @@
+<!-- 通知栏小图标：一个对勾。系统会把它统一染成白色单色，所以只用白色路径即可。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19L21,7l-1.41,-1.41z" />
+</vector>
