@@ -40,10 +40,10 @@ class MainActivity : ComponentActivity() {
     private val requestNotificationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
-                setNotificationsEnabled(true)
+                applyNotificationSetting(true)
             } else {
                 // 用户拒绝授权，把开关恢复为关闭，避免“开着却收不到通知”的困惑。
-                setNotificationsEnabled(false)
+                applyNotificationSetting(false)
             }
         }
 
@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
         if (enabled) {
             ensurePermissionAndSchedule()
         } else {
-            setNotificationsEnabled(false)
+            applyNotificationSetting(false)
         }
     }
 
@@ -103,12 +103,12 @@ class MainActivity : ComponentActivity() {
         if (needsRequest) {
             requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
-            setNotificationsEnabled(true)
+            applyNotificationSetting(true)
         }
     }
 
     // 统一更新：保存开关、刷新 UI 状态、登记或取消提醒任务。
-    private fun setNotificationsEnabled(enabled: Boolean) {
+    private fun applyNotificationSetting(enabled: Boolean) {
         settings.notificationsEnabled = enabled
         notificationsEnabled = enabled
         ReminderScheduler.apply(applicationContext, enabled)
